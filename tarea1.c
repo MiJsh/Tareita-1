@@ -20,91 +20,7 @@ typedef struct {
 
 List* ColasTickets[3];
 
-//Prototipos :P
-void registrar_ticket();
-void asignarPrio();
-void mostrar_tickets();
-void procesarTicket();
-void buscarTicket();
-void LimpiarPantallita();
-int lower_than();
-void pausarPantalla();
-
-
-
-const char * prioridad_to_string(Prioridad nivel_prioridad) {
-    static const char * textosPrioridad[] = {
-        "Prioridad Baja",
-        "Prioridad Media",
-        "Prioridad Alta"
-    };
-    if (nivel_prioridad < 0 || nivel_prioridad > 2) {
-        return "Prioridad Invalida";
-    }
-    return textosPrioridad[nivel_prioridad];
-}
-
-
-
-
-
-int main() {
-    for (int i = 0; i < 3; i++) {
-        ColasTickets[i] = list_create();
-        if (ColasTickets[i] == NULL) {
-            printf("Error: No se pudo inicializar la cola de prioridad %d.\n", i);
-            return 1;
-        }
-    }
-    printf("Sistema de gestión de tickets inicializado.\n");
-
-    int opcion;
-    do {
-        //LimpiarPantallita();
-        printf("\nMenu:\n");
-        printf("1. Registrar Ticket\n");
-        printf("2. Asignar Prioridad\n");
-        printf("3. Mostrar Tickets\n");
-        printf("4. Procesar Ticket\n");
-        printf("5. Buscar Ticket\n");
-        printf("6. Salir\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
-        switch (opcion) {
-            case 1:
-                registrar_ticket();
-                break;
-            case 2:
-                asignarPrio();
-                break;
-            case 3:
-                mostrar_tickets();
-                break;
-            case 4:
-                procesarTicket();
-                break;
-            case 5:
-                buscarTicket();
-                break;
-            case 6:
-                printf("Saliendo del sistema.\n");
-                break;
-            default:
-                printf("Opcion invalida. Intente de nuevo.\n");
-        }
-        //pausarPantalla();
-
-    } while (opcion != 6);
-
-    for (int i = 0; i < 3; i++) {
-        list_clean(ColasTickets[i]);
-        free(ColasTickets[i]);
-    }
-    return 0;
-}
-
 //FUNCIONES 
-
 int lower_than(void *data1, void *data2) {
     Ticket *ticket1 = (Ticket *)data1;
     Ticket *ticket2 = (Ticket *)data2;
@@ -118,10 +34,29 @@ void registrar_ticket() {
         printf("Error, no se alojo memoria");
         return;
     }
-    //Asignar ID ticket
-    printf("Ingrese el ID del ticket:");
-    scanf("%d", &nuevoTicket->id);
-    getchar();
+
+    int idDuplicado = 0;
+    do {
+        printf("Ingrese el ID del ticket: ");
+        scanf("%d", &nuevoTicket->id);
+        getchar();
+
+        // Verificar ya existe el id 0= false, 1= true
+        idDuplicado = 0;
+        for (int i = 0; i < 3; i++) {
+            void *Puntero = list_first(ColasTickets[i]);
+            while (Puntero != NULL) {
+                Ticket *ticket = (Ticket *)Puntero;
+                if (ticket->id == nuevoTicket->id) {
+                    printf("Error: Ya existe un ticket con el ID %d. Intente con otro ID.\n", nuevoTicket->id);
+                    idDuplicado = 1;
+                    break;
+                }
+                Puntero = list_next(ColasTickets[i]);
+            }
+            if (idDuplicado) break;
+        }
+    } while (idDuplicado);
 
     //Asignar descripcion ticket
     printf("Ingrese una descripcion para el ticket: ");
@@ -136,6 +71,19 @@ void registrar_ticket() {
     list_sortedInsert(ColasTickets[Prioridad_baja], nuevoTicket, lower_than);
     printf("Ticket registrado con exito.\n");
 }
+
+const char * prioridad_to_string(Prioridad nivel_prioridad) {
+    static const char * textosPrioridad[] = {
+        "Prioridad Baja",
+        "Prioridad Media",
+        "Prioridad Alta"
+    };
+    if (nivel_prioridad < 0 || nivel_prioridad > 2) {
+        return "Prioridad Invalida";
+    }
+    return textosPrioridad[nivel_prioridad];
+}
+
 void asignarPrio() {
     int id;
     printf("Ingrese el ID del ticket cuya prioridad quiera cambiar: ");
@@ -196,6 +144,7 @@ void procesarTicket() {
     for (int nivel = Prioridad_alta; nivel >= Prioridad_baja; nivel--) {
         Ticket *ticket = (Ticket *)list_first(ColasTickets[nivel]);
         if (ticket != NULL) {
+            list_popFront(ColasTickets[nivel]);
             printf("Procesando ticket con ID: %d\n", ticket->id);
             printf("Descripción: %s\n", ticket->descripcion);
             printf("Fecha de creación: %s", ctime(&ticket->fecha_creacion));
@@ -230,17 +179,74 @@ void buscarTicket() {
             Puntero = list_next(ColasTickets[nivel]);
         }
     }
-
+    printf("Ticket con ID %d no encontrado.\n", id);
 }
 
 void LimpiarPantallita() {
     #ifdef _WIN32
-        system("cls"); // Comando para limpiar pantalla en Windows
+        system("cls"); 
     #else
-        printf("clear");
+        system("clear"); 
     #endif
 }
+
 void pausarPantalla() {
     printf("Presione Enter para continuar...");
-    getchar();
+    getchar(); 
+}
+
+
+int main() {
+    for (int i = 0; i < 3; i++) {
+        ColasTickets[i] = list_create();
+        if (ColasTickets[i] == NULL) {
+            printf("Error: No se pudo inicializar la cola de prioridad %d.\n", i);
+            return 1;
+        }
+    }
+    printf("Sistema de gestion de tickets inicializado.\n");
+
+    int opcion;
+    do {
+        //LimpiarPantallita();
+        printf("\nMenu:\n");
+        printf("1. Registrar Ticket\n");
+        printf("2. Asignar Prioridad\n");
+        printf("3. Mostrar Tickets\n");
+        printf("4. Procesar Ticket\n");
+        printf("5. Buscar Ticket\n");
+        printf("6. Salir\n");
+        printf("Seleccione una opcion: ");
+        scanf("%d", &opcion);
+        switch (opcion) {
+            case 1:
+                registrar_ticket();
+                break;
+            case 2:
+                asignarPrio();
+                break;
+            case 3:
+                mostrar_tickets();
+                break;
+            case 4:
+                procesarTicket();
+                break;
+            case 5:
+                buscarTicket();
+                break;
+            case 6:
+                printf("Saliendo del sistema.\n");
+                break;
+            default:
+                printf("Opcion invalida. Intente de nuevo.\n");
+        }
+        //pausarPantalla();
+
+    } while (opcion != 6);
+
+    for (int i = 0; i < 3; i++) {
+        list_clean(ColasTickets[i]);
+        free(ColasTickets[i]);
+    }
+    return 0;
 }
