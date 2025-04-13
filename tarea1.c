@@ -20,6 +20,17 @@ typedef struct {
 
 List* ColasTickets[3]; // Arreglo de listas para cada nivel de prioridad
 
+//Prototipos :P
+void registrar_ticket();
+void asignarPrio();
+void mostrar_tickets();
+void procesarTicket();
+void buscarTicket();
+void LimpiarPantallita();
+
+
+
+
 const char * prioridad_to_string(Prioridad nivel_prioridad) {
     static const char * textosPrioridad[] = {
         "Prioridad Baja",
@@ -33,6 +44,9 @@ const char * prioridad_to_string(Prioridad nivel_prioridad) {
 }
 
 
+
+
+
 int main() {
     for (int i = 0; i < 3; i++) {
         ColasTickets[i] = list_create(); // Inicializo cada lista
@@ -43,9 +57,70 @@ int main() {
     }
     printf("Sistema de gestión de tickets inicializado.\n");
 
+    int opcion;
+    do {
+        //LimpiarPantallita();
+        printf("\nMenu:\n");
+        printf("1. Registrar Ticket\n");
+        printf("2. Asignar Prioridad\n");
+        printf("3. Mostrar Tickets\n");
+        printf("4. Procesar Ticket\n");
+        printf("5. Buscar Ticket\n");
+        printf("6. Salir\n");
+        printf("Seleccione una opcion: ");
+        scanf("%d", &opcion);
+        switch (opcion) {
+            case 1:
+                registrar_ticket();
+                break;
+            case 2:
+                asignarPrio();
+                break;
+            case 3:
+                mostrar_tickets();
+                break;
+            case 4:
+                procesarTicket();
+                break;
+            case 5:
+                buscarTicket();
+                break;
+            case 6:
+                printf("Saliendo del sistema.\n");
+                break;
+            default:
+                printf("Opcion invalida. Intente de nuevo.\n");
+        }
+    } while (opcion != 6);
     for (int i = 0; i < 3; i++) {
-        list_clean(colasTickets[i]);
+        list_clean(ColasTickets[i]);
         free(ColasTickets[i]);
     }
     return 0;
+}
+
+//FUNCIONES 
+
+void registrar_ticket() {
+    printf(":P");
+}
+void asignarPrio() {
+    printf(":P");
+}
+void mostrar_tickets() {
+    printf(":P");
+}
+void procesarTicket() {
+    printf(":P");
+}
+void buscarTicket() {
+    printf(":P");
+}
+
+void LimpiarPantallita() {
+    #ifdef _WIN32
+        system("cls"); // Comando para limpiar pantalla en Windows
+    #else
+        printf("\033[H\033[J"); // Comando ANSI para otros sistemas operativos
+    #endif
 }
