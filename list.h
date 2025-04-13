@@ -35,8 +35,7 @@ void *list_popCurrent(List *L);
 void list_clean(List *L);
 
 // Función para insertar ordenado de acuerdo a la función lower_than
-void list_sortedInsert(List *L, void *data,
-                       int (*lower_than)(void *data1, void *data2));
+void list_sortedInsert(List *L, void *data,int (*lower_than)(void *data1, void *data2));
 
 int list_size(List* L);
 
